@@ -4,245 +4,220 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>一般閥牌價/報價查詢系統</title>
-    
-    <link rel="apple-touch-icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' rx='28' fill='%231a365d'/><circle cx='64' cy='64' r='40' fill='none' stroke='%233182ce' stroke-width='8'/><circle cx='64' cy='64' r='12' fill='%233182ce'/><line x1='64' y1='16' x2='64' y2='112' stroke='%233182ce' stroke-width='8'/><line x1='16' y1='64' x2='112' y2='64' stroke='%233182ce' stroke-width='8'/></svg>">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' rx='28' fill='%231a365d'/><circle cx='64' cy='64' r='40' fill='none' stroke='%233182ce' stroke-width='8'/><circle cx='64' cy='64' r='12' fill='%233182ce'/><line x1='64' y1='16' x2='64' y2='112' stroke='%233182ce' stroke-width='8'/><line x1='16' y1='64' x2='112' y2='64' stroke='%233182ce' stroke-width='8'/></svg>">
-
+    <title>總毅實業查價系統</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-        body { background-color: #f4f6f9; color: #333; padding: 15px; font-size: 16px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 550px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-top: 10px; }
-        .brand-header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #3182ce; padding-bottom: 15px; }
-        .brand-header h1 { font-size: 24px; color: #1a365d; font-weight: bold; }
-        .brand-header p { font-size: 14px; color: #4a5568; margin-top: 4px; font-weight: 500; }
-        .form-group { margin-bottom: 18px; }
-        label { display: block; font-weight: bold; margin-bottom: 6px; color: #2d3748; font-size: 15px; }
-        select, input { width: 100%; padding: 12px; border: 1px solid #cbd5e0; border-radius: 8px; background-color: #fff; font-size: 16px; color: #4a5568; outline: none; -webkit-appearance: none; appearance: none; }
-        .select-wrapper { position: relative; }
-        .select-wrapper::after { content: "▼"; font-size: 12px; color: #a0aec0; position: absolute; right: 15px; top: 15px; pointer-events: none; }
-        select:focus, input:focus { border-color: #3182ce; box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); }
-        .result-box { margin-top: 25px; padding: 18px; border-radius: 8px; background-color: #f7fafc; border-left: 5px solid #3182ce; }
-        .result-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 16px; }
-        .result-row:last-child { margin-bottom: 0; padding-top: 10px; border-top: 1px dashed #cbd5e0; }
-        .price-label { font-weight: bold; color: #4a5568; }
-        .price-value { font-size: 18px; font-weight: bold; color: #2d3748; }
-        .final-label { font-size: 18px; font-weight: bold; color: #2d3748; }
-        .final-value { font-size: 28px; font-weight: 900; color: #e53e3e; }
-        .hint { font-size: 12px; color: #718096; margin-top: 4px; }
-        .footer { text-align: center; font-size: 12px; color: #a0aec0; margin-top: 20px; }
+        * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: #f0f4f8; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .container { background-color: #ffffff; width: 100%; max-width: 480px; border-radius: 16px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2); padding: 20px; }
+        
+        /* 四大系統分頁樣式 */
+        .category-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
+        .tab-btn { border: none; padding: 12px 8px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        
+        .tab-btn[data-cat="一般閥件"] { background-color: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
+        .tab-btn[data-cat="一般閥件"].active { background-color: #1976d2; color: #ffffff; }
+        
+        .tab-btn[data-cat="水錘吸收器"] { background-color: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
+        .tab-btn[data-cat="水錘吸收器"].active { background-color: #388e3c; color: #ffffff; }
+        
+        .tab-btn[data-cat="污排水"] { background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+        .tab-btn[data-cat="污排水"].active { background-color: #f57c00; color: #ffffff; }
+        
+        .tab-btn[data-cat="特殊閥件"] { background-color: #f3e5f5; color: #4a148c; border: 1px solid #e1bee7; }
+        .tab-btn[data-cat="特殊閥件"].active { background-color: #7b1fa2; color: #ffffff; }
+
+        .system-title { font-size: 18px; font-weight: bold; color: #333333; text-align: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #eaeaea; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 14px; font-weight: 600; color: #4a5568; margin-bottom: 6px; }
+        select, input { width: 100%; height: 48px; border: 1px solid #cbd5e1; border-radius: 10px; padding: 0 12px; font-size: 16px; color: #334155; background-color: #ffffff; outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+        select { background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 16px; padding-right: 40px; }
+        select:focus, input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .hint-text { font-size: 12px; color: #94a3b8; margin-top: 4px; padding-left: 2px; }
+        
+        .result-card { background: linear-gradient(145deg, #f8fafc, #f1f5f9); border-radius: 12px; padding: 16px; margin-top: 20px; border-left: 5px solid #3b82f6; }
+        .result-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e2e8f0; }
+        .result-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .result-label { font-size: 15px; color: #64748b; font-weight: 500; }
+        .result-value { font-size: 18px; color: #1e293b; font-weight: 700; }
+        .price-highlight { font-size: 24px; color: #ef4444; font-weight: 800; }
+        .footer { text-align: center; margin-top: 20px; font-size: 11px; color: #94a3b8; letter-spacing: 0.5px; }
     </style>
+    
+    <script src="valveData.js"></script>
 </head>
 <body>
 
 <div class="container">
-    <div class="brand-header">
-        <h1>總毅實業有限公司</h1>
-        <p>一般閥牌價/報價查詢系統</p>
+    <div class="category-tabs">
+        <button class="tab-btn active" data-cat="一般閥件" onclick="switchCategory('一般閥件')">🔵 一般閥件</button>
+        <button class="tab-btn" data-cat="水錘吸收器" onclick="switchCategory('水錘吸收器')">🟢 水錘吸收器</button>
+        <button class="tab-btn" data-cat="污排水" onclick="switchCategory('污排水')">🟡 污排水</button>
+        <button class="tab-btn" data-cat="特殊閥件" onclick="switchCategory('特殊閥件')">🟣 特殊閥件</button>
     </div>
-    
-    <div class="form-group">
-        <label for="materialSelect">1. 選擇材質 / 壓力系列</label>
-        <div class="select-wrapper">
-            <select id="materialSelect" onchange="updateProducts()">
-                <option value="">-- 請選擇材質系列 --</option>
-                <option value="不鏽鋼 牙口系列 (300PSI/10000PSI)">不鏽鋼 牙口系列 (300PSI/10000PSI)</option>
-                <option value="不鏽鋼 法蘭/對夾口 10K">不鏽鋼 法蘭/對夾口 10K</option>
-                <option value="不鏽鋼 法蘭/對夾口 16K">不鏽鋼 法蘭/對夾口 16K</option>
-                <option value="砲金銅 牙口系列 (10K/16K/400PSI)">砲金銅 牙口系列 (10K/16K/400PSI)</option>
-                <option value="鑄鐵 法蘭/對夾口 10K">鑄鐵 法蘭/對夾口 10K</option>
-                <option value="球墨鑄鐵 法蘭/對夾口 16K">球墨鑄鐵 法蘭/對夾口 16K</option>
-            </select>
-        </div>
+
+    <div class="system-title">
+        <span id="current-title-text">一般閥件 牌價/報價查詢</span>
     </div>
 
     <div class="form-group">
-        <label for="productSelect">2. 選擇產品名稱</label>
-        <div class="select-wrapper">
-            <select id="productSelect" onchange="updateSizes()">
-                <option value="">-- 請先選擇材質系列 --</option>
-            </select>
-        </div>
+        <label for="matSelect">1. 選擇材質 / 壓力系列</label>
+        <select id="matSelect" onchange="onMatChange()">
+            <option value="">-- 請選擇材質系列 --</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="prodSelect">2. 選擇產品名稱</label>
+        <select id="prodSelect" onchange="onProdChange()">
+            <option value="">-- 請先選擇材質系列 --</option>
+        </select>
     </div>
 
     <div class="form-group">
         <label for="sizeSelect">3. 選擇尺寸</label>
-        <div class="select-wrapper">
-            <select id="sizeSelect" onchange="runCalculation()">
-                <option value="">-- 請先選擇產品 --</option>
-            </select>
-        </div>
+        <select id="sizeSelect" onchange="calculatePrice()">
+            <option value="">-- 請先選擇產品 --</option>
+        </select>
     </div>
 
     <div class="form-group">
         <label for="discountInput">4. 輸入折數 (折)</label>
-        <input type="number" id="discountInput" value="100" min="0" max="100" oninput="runCalculation()" placeholder="例如：22 折請輸入 22">
-        <div class="hint">提示：100 代表原始牌價，22 代表打 22 折</div>
+        <input type="number" id="discountInput" value="100" min="0" max="100" oninput="calculatePrice()">
+        <div class="hint-text">提示：100 代表原始牌價，55 代表打 55 折</div>
     </div>
 
-    <div class="result-box">
+    <div class="result-card" id="resultCard">
         <div class="result-row">
-            <span class="price-label">原始牌價：</span>
-            <span class="price-value" id="basePriceDisplay">NT$ 0</span>
+            <span class="result-label">原始牌價：</span>
+            <span class="result-value" id="basePriceLabel">NT$ 0</span>
         </div>
         <div class="result-row">
-            <span class="final-label">折後報價：</span>
-            <span class="final-value" id="finalPriceDisplay">NT$ 0</span>
+            <span class="result-label">折後報價：</span>
+            <span class="result-value price-highlight" id="finalPriceLabel">NT$ 0</span>
         </div>
     </div>
 
-    <div class="footer">總毅實業有限公司 • 雲端查價系統修正版</div>
+    <div class="footer">
+        總毅實業有限公司 • 雲端查價系統分離版
+    </div>
 </div>
 
 <script>
-const valveData = [
-    { mat: "不鏽鋼 牙口系列 (300PSI/10000PSI)", prod: "不鏽鋼非昇桿閘門 牙口 300PSI", sizes: {"1/2": 2850, "3/4": 3430, "1": 4380, "1-1/4": 5720, "1-1/2": 7790, "2": 10270, "2-1/2": 29000, "3": "實售價"} },
-    { mat: "不鏽鋼 牙口系列 (300PSI/10000PSI)", prod: "不鏽鋼橫式逆止閥 牙口 300PSI", sizes: {"1/2": 2790, "3/4": 3240, "1": 3950, "1-1/4": 5460, "1-1/2": 6880, "2": 8550, "2-1/2": "實售價", "3": "實售價"} },
-    { mat: "不鏽鋼 牙口系列 (300PSI/10000PSI)", prod: "不鏽鋼無聲逆止閥 牙口 300PSI", sizes: {"1/2": 3250, "3/4": 3750, "1": 4400, "1-1/4": 6400, "1-1/2": 8000, "2": 11500, "2-1/2": 22000, "3": "N/A"} },
-    { mat: "不鏽鋼 牙口系列 (300PSI/10000PSI)", prod: "不鏽鋼Y型過濾器  牙口 300PSI", sizes: {"1/2": 2070, "3/4": 2500, "1": 3430, "1-1/4": 3750, "1-1/2": 5190, "2": 11600, "2-1/2": "N/A", "3": "N/A"} },
-    { mat: "不鏽鋼 牙口系列 (300PSI/10000PSI)", prod: "不鏽鋼單片式球塞閥 牙口 10000PSI", sizes: {"1/2": 940, "3/4": 1170, "1": 1530, "1-1/4": 2220, "1-1/2": 2720, "2": 3870, "2-1/2": "N/A", "3": "N/A"} },
-    { mat: "不鏽鋼 牙口系列 (300PSI/10000PSI)", prod: "不鏽鋼雙片式球塞閥 牙口 10000PSI", sizes: {"1/2": 1350, "3/4": 2020, "1": 2480, "1-1/4": 3670, "1-1/2": 5040, "2": 7420, "2-1/2": 17020, "3": "實售價"} },
-    
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼昇桿式閘門閥 法蘭口 10K", sizes: {"2": 24490, "2-1/2": 31600, "3": 42890, "4": 54440, "5": 70800, "6": 98260, "8": 186000, "10": 338000, "12": 508000} },
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼非昇桿式閘門閥 法蘭口 10K", sizes: {"2": 17100, "2-1/2": 22100, "3": 30000, "4": 38100, "5": 49500, "6": 68700, "8": 130200, "10": "實售價", "12": "實售價"} },
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼橫式逆止閥 法蘭口 10K", sizes: {"2": 22120, "2-1/2": 31730, "3": 34700, "4": 49990, "5": 70660, "6": 93830, "8": 182000, "10": 338000, "12": 538000} },
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼無聲逆止閥 法蘭口 10K", sizes: {"2": 41120, "2-1/2": 46670, "3": 57780, "4": 76670, "5": 97780, "6": 127780, "8": 188890, "10": 238890, "12": 311120} },
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼Y型過濾器  法蘭口 10K", sizes: {"2": 24000, "2-1/2": 31720, "3": 39680, "4": 50050, "5": 89130, "6": 98990, "8": 176000, "10": 348000, "12": 564000} },
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼拉柄式底閥 法蘭口 10K", sizes: {"2": 25560, "2-1/2": 27780, "3": 35000, "4": 42230, "5": 54450, "6": 66670, "8": 109200, "10": "N/A", "12": "N/A"} },
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼球塞閥  法蘭口 10K", sizes: {"2": 15790, "2-1/2": 19870, "3": 27320, "4": 33380, "5": 87930, "6": 112970, "8": 224000, "10": "N/A", "12": "N/A"} },
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼蝶閥 對夾式 10K/把手型", sizes: {"2": 8820, "2-1/2": 10040, "3": 11940, "4": 15000, "5": 21960, "6": 26290, "8": 45000, "10": "N/A", "12": "N/A"} },
-    { mat: "不鏽鋼 法蘭/對夾口 10K", prod: "不鏽鋼蝶閥 對夾式 10K/SUS齒輪型", sizes: {"2": 16670, "2-1/2": 18060, "3": 20370, "4": 23840, "5": 33000, "6": 37500, "8": 58340, "10": 85560, "12": 112000} },
-    
-    { mat: "不鏽鋼 法蘭/對夾口 16K", prod: "不鏽鋼昇桿閘門閥 法蘭口 16K", sizes: {"2": 38500, "2-1/2": 49600, "3": 67500, "4": 85600, "5": 111400, "6": 154500, "8": 340000, "10": "實售價", "12": "實售價"} },
-    { mat: "不鏽鋼 法蘭/對夾口 16K", prod: "不鏽鋼橫式逆止閥 法蘭口 16K", sizes: {"2": 36900, "2-1/2": 52900, "3": 57800, "4": 83300, "5": 117800, "6": 156400, "8": 272000, "10": "實售價", "12": "實售價"} },
-    { mat: "不鏽鋼 法蘭/對夾口 16K", prod: "不鏽鋼無聲式逆止閥 法蘭口 16K", sizes: {"2": 70500, "2-1/2": 80500, "3": 99500, "4": 131600, "5": 167700, "6": 219500, "8": 324000, "10": 410000, "12": 534000} },
-    { mat: "不鏽鋼 法蘭/對夾口 16K", prod: "不鏽鋼Y型過濾器 法蘭口 16K", sizes: {"2": 40000, "2-1/2": 52800, "3": 66200, "4": 83500, "5": 148600, "6": 166000, "8": 280000, "10": "實售價", "12": "實售價"} },
-    { mat: "不鏽鋼 法蘭/對夾口 16K", prod: "不鏽鋼拉柄式底閥 法蘭口 16K", sizes: {"2": 43500, "2-1/2": 49000, "3": 62000, "4": 78000, "5": 97500, "6": 125000, "8": 202500} },
-    { mat: "不鏽鋼 法蘭/對夾口 16K", prod: "不鏽鋼蝶閥 對夾式 16K/把手型", sizes: {"2": 13860, "2-1/2": 15800, "3": 18760, "4": 23580, "5": 34520, "6": 41330, "8": 72000} },
-    { mat: "不鏽鋼 法蘭/對夾口 16K", prod: "不鏽鋼蝶閥 對夾式 16K/SUS齒輪型", sizes: {"2": 26200, "2-1/2": 28400, "3": 33000, "4": 37500, "5": 52000, "6": 59000, "8": 91700, "10": 134500, "12": 178000} },
-    
-    { mat: "砲金銅 牙口系列 (10K/16K/400PSI)", prod: "砲金銅閘門閥 牙口 10K", sizes: {"1/2": 480, "3/4": 640, "1": 870, "1-1/4": 1270, "1-1/2": 1520, "2": 2250, "2-1/2": 4340, "3": 6330} },
-    { mat: "砲金銅 牙口系列 (10K/16K/400PSI)", prod: "砲金銅橫式逆止閥 牙口 10K", sizes: {"1/2": 480, "3/4": 630, "1": 880, "1-1/4": 1170, "1-1/2": 1560, "2": 2240, "2-1/2": 4580, "3": 6440} },
-    { mat: "砲金銅 牙口系列 (10K/16K/400PSI)", prod: "砲金銅閘門閥 牙口 16K", sizes: {"1/2": 700, "3/4": 910, "1": 1390, "1-1/4": 1810, "1-1/2": 2440, "2": 3890, "2-1/2": 5840, "3": 7500} },
-    { mat: "砲金銅 牙口系列 (10K/16K/400PSI)", prod: "砲金銅橫式逆止閥 牙口 16K", sizes: {"1/2": 910, "3/4": 1190, "1": 1740, "1-1/4": 2440, "1-1/2": 3060, "2": 4870} },
-    { mat: "砲金銅 牙口系列 (10K/16K/400PSI)", prod: "砲金銅無聲式逆止閥 牙口 16K", sizes: {"1/2": 560, "3/4": 720, "1": 920, "1-1/4": 1160, "1-1/2": 1620, "2": 2340, "2-1/2": 5770, "3": 7230} },
-    { mat: "砲金銅 牙口系列 (10K/16K/400PSI)", prod: "砲金銅球塞閥 牙口 16K", sizes: {"1/2": 590, "3/4": 810, "1": 1140, "1-1/4": 1550, "1-1/2": 2000, "2": 3120, "2-1/2": 7260} },
-    
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵非昇桿閘門閥 法蘭口 10K", sizes: {"2": 7030, "2-1/2": 8020, "3": 10570, "4": 14100, "5": 20350, "6": 27040, "8": 41660, "10": 71300, "12": 103740} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵昇桿閘門閥 法蘭口 10K", sizes: {"2": 8400, "2-1/2": 9660, "3": 12380, "4": 16770, "5": 22350, "6": 28760, "8": 45100, "10": 74300, "12": 104680} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵中型橫式逆止閥 法蘭口 10K", sizes: {"2": 3240, "2-1/2": 4230, "3": 4670, "4": 7870, "5": 10740, "6": 15350, "8": 26790} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵橫式逆止閥 法蘭口 10K", sizes: {"2": 12000, "2-1/2": 14500, "3": 18000, "4": 22000, "5": 30000, "6": 40000, "8": 62000, "10": 88000, "12": 115000} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵無聲式逆止閥 法蘭口 10K", sizes: {"2": 5900, "2-1/2": 8440, "3": 10600, "4": 12970, "5": 19780, "6": 26490, "8": 38960, "10": 63680, "12": 94000} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵雙瓣式逆止閥 對夾式 10K", sizes: {"2": 3980, "2-1/2": 4150, "3": 5230, "4": 6540, "5": 8400, "6": 11140, "8": 19050, "10": 32490, "12": 47330} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵拉柄式底閥 法蘭口 10K", sizes: {"2": 8050, "2-1/2": 9600, "3": 11360, "4": 14640, "5": 19100, "6": 26100, "8": 48030} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵Y型過濾器 法蘭口 10K", sizes: {"2": 3750, "2-1/2": 5240, "3": 6360, "4": 9850, "5": 14460, "6": 20640, "8": 34220, "10": 57370, "12": 80720} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵蝶閥FCD閥盤 對夾式 10K/把手型", sizes: {"2": 3720, "2-1/2": 3950, "3": 4270, "4": 5060, "5": 6260, "6": 7460, "8": 10600} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵蝶閥FCD閥盤 對夾式 10K/齒輪型", sizes: {"2": 7870, "2-1/2": 8000, "3": 8450, "4": 9190, "5": 10380, "6": 11130, "8": 17240, "10": 23490, "12": 28090} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵蝶閥不鏽鋼閥盤 對夾式 10K/把手型", sizes: {"2": 4430, "2-1/2": 4580, "3": 5190, "4": 6320, "5": 8020, "6": 10020, "8": 15100} },
-    { mat: "鑄鐵 法蘭/對夾口 10K", prod: "鑄鐵蝶閥不鏽鋼閥盤 對夾式 10K/齒輪型", sizes: {"2": 8490, "2-1/2": 8820, "3": 9830, "4": 11030, "5": 12700, "6": 14200, "8": 22900, "10": 32680, "12": 46100} },
-    
-    { mat: "球墨鑄鐵 法蘭/對夾口 16K", prod: "球墨鑄鐵昇桿閘門閥 法蘭口 16K", sizes: {"2": 15080, "2-1/2": 17750, "3": 23900, "4": 29160, "5": 44080, "6": 53550, "8": 85560, "10": 115560, "12": 214100} },
-    { mat: "球墨鑄鐵 法蘭/對夾口 16K", prod: "球墨鑄鐵橫式逆止閥 法蘭口 16K", sizes: {"2": 14830, "2-1/2": 17170, "3": 21350, "4": 23920, "5": 34200, "6": 41180, "8": 70020, "10": 100070, "12": 146440} },
-    { mat: "球墨鑄鐵 法蘭/對夾口 16K", prod: "球墨鑄鐵無聲式逆止閥 法蘭口 16K", sizes: {"2": 12230, "2-1/2": 15560, "3": 19560, "4": 26000, "5": 34230, "6": 45830, "8": 86890} },
-    { mat: "球墨鑄鐵 法蘭/對夾口 16K", prod: "球墨鑄鐵Y型過濾器 法蘭口 16K", sizes: {"2": 6590, "2-1/2": 9840, "3": 12190, "4": 17090, "5": 25590, "6": 35970, "8": 52980, "10": 80370, "12": 113600} },
-    { mat: "球墨鑄鐵 法蘭/對夾口 16K", prod: "球墨鑄鐵蝶閥CF8閥盤 對夾式 16K/把手型", sizes: {"2": 5340, "2-1/2": 6000, "3": 6890, "4": 7920, "5": 11120, "6": 13730, "8": 21000} },
-    { mat: "球墨鑄鐵 法蘭/對夾口 16K", prod: "球墨鑄鐵蝶閥CF8閥盤 對夾式 16K/齒輪型", sizes: {"2": 10560, "2-1/2": 11670, "3": 13440, "4": 14450, "5": 17780, "6": 21670, "8": 31670, "10": 42230, "12": 56670} }
-];
+let currentCategory = "一般閥件";
 
-const orderedSizeList = ["1/2", "3/4", "1", "1-1/4", "1-1/2", "2", "2-1/2", "3", "4", "5", "6", "8", "10", "12"];
+const sizeWeight = {
+    "1/4": 1, "3/8": 2, "1/2": 3, "3/4": 4, "1": 5, 
+    "1-1/4": 6, "1-1/2": 7, "2": 8, "2-1/2": 9, "3": 10, 
+    "4": 11, "5": 12, "6": 13, "8": 14, "10": 15, "12": 16
+};
 
-const matSelect = document.getElementById('materialSelect');
-const prodSelect = document.getElementById('productSelect');
-const sizeSelect = document.getElementById('sizeSelect');
-const discInput = document.getElementById('discountInput');
-const baseDisplay = document.getElementById('basePriceDisplay');
-const finalDisplay = document.getElementById('finalPriceDisplay');
-
-function updateProducts() {
-    const selectedMat = matSelect.value;
-    prodSelect.innerHTML = '<option value="">-- 請選擇產品品名 --</option>';
-    sizeSelect.innerHTML = '<option value="">-- 請先選擇產品 --</option>';
-    clearDisplays();
-    if (!selectedMat) return;
-
-    // 修正點：建立一個去重複的清單
-    let addedProducts = {};
-    for (var i = 0; i < valveData.length; i++) {
-        if (valveData[i].mat === selectedMat && !addedProducts[valveData[i].prod]) {
-            addedProducts[valveData[i].prod] = true;
-            var option = document.createElement('option');
-            option.value = valveData[i].prod;
-            option.textContent = valveData[i].prod;
-            prodSelect.appendChild(option);
-        }
-    }
+function switchCategory(catName) {
+    currentCategory = catName;
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        if(btn.getAttribute('data-cat') === catName) btn.classList.add('active');
+        else btn.classList.remove('active');
+    });
+    document.getElementById('current-title-text').innerText = `${catName} 牌價/報價查詢`;
+    renderMatOptions();
 }
 
-function updateSizes() {
-    const selectedMat = matSelect.value;
-    const selectedProd = prodSelect.value;
+function renderMatOptions() {
+    const matSelect = document.getElementById("matSelect");
+    matSelect.innerHTML = '<option value="">-- 請選擇材質系列 --</option>';
+    
+    // 防呆：如果外部資料尚未加載完成
+    if (typeof valveData === "undefined") return;
+
+    const filteredMats = [...new Set(
+        valveData.filter(item => item.cat === currentCategory).map(item => item.mat)
+    )];
+    
+    filteredMats.forEach(mat => {
+        const opt = document.createElement("option");
+        opt.value = mat; opt.innerText = mat;
+        matSelect.appendChild(opt);
+    });
+    onMatChange();
+}
+
+function onMatChange() {
+    const matVal = document.getElementById("matSelect").value;
+    const prodSelect = document.getElementById("prodSelect");
+    prodSelect.innerHTML = '<option value="">-- 請選擇產品名稱 --</option>';
+    
+    if (!matVal || typeof valveData === "undefined") {
+        prodSelect.innerHTML = '<option value="">-- 請先選擇材質系列 --</option>';
+        onProdChange();
+        return;
+    }
+    
+    const prods = valveData.filter(item => item.cat === currentCategory && item.mat === matVal);
+    prods.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.prod; opt.innerText = item.prod;
+        prodSelect.appendChild(opt);
+    });
+    onProdChange();
+}
+
+function onProdChange() {
+    const matVal = document.getElementById("matSelect").value;
+    const prodVal = document.getElementById("prodSelect").value;
+    const sizeSelect = document.getElementById("sizeSelect");
     sizeSelect.innerHTML = '<option value="">-- 請選擇尺寸 --</option>';
-    clearDisplays();
-    if (!selectedMat || !selectedProd) return;
-
-    var targetItem = null;
-    for (var i = 0; i < valveData.length; i++) {
-        if (valveData[i].mat === selectedMat && valveData[i].prod === selectedProd) {
-            targetItem = valveData[i];
-            break;
-        }
-    }
-    if (!targetItem) return;
-
-    for (var j = 0; j < orderedSizeList.length; j++) {
-        var currentSize = orderedSizeList[j];
-        if (targetItem.sizes[currentSize] !== undefined) {
-            var option = document.createElement('option');
-            option.value = currentSize;
-            option.textContent = currentSize + '" 吋';
-            sizeSelect.appendChild(option);
-        }
-    }
-}
-
-function runCalculation() {
-    const selectedMat = matSelect.value;
-    const selectedProd = prodSelect.value;
-    const selectedSize = sizeSelect.value;
-    const discValue = discInput.value;
-
-    if (!selectedMat || !selectedProd || !selectedSize) {
-        clearDisplays();
+    
+    if (!matVal || !prodVal || typeof valveData === "undefined") {
+        sizeSelect.innerHTML = '<option value="">-- 請先選擇產品 --</option>';
+        calculatePrice();
         return;
     }
-
-    var targetItem = null;
-    for (var i = 0; i < valveData.length; i++) {
-        if (valveData[i].mat === selectedMat && valveData[i].prod === selectedProd) {
-            targetItem = valveData[i];
-            break;
-        }
+    
+    const matched = valveData.find(item => item.cat === currentCategory && item.mat === matVal && item.prod === prodVal);
+    if (matched && matched.sizes) {
+        const sortedSizes = Object.keys(matched.sizes).sort((a, b) => (sizeWeight[a] || 99) - (sizeWeight[b] || 99));
+        sortedSizes.forEach(size => {
+            const opt = document.createElement("option");
+            opt.value = size; opt.innerText = size + " 吋";
+            sizeSelect.appendChild(opt);
+        });
     }
-    if (!targetItem) return;
+    calculatePrice();
+}
 
-    const originalPrice = targetItem.sizes[selectedSize];
-    if (isNaN(originalPrice)) {
-        baseDisplay.textContent = originalPrice;
-        finalDisplay.textContent = originalPrice;
+function calculatePrice() {
+    const matVal = document.getElementById("matSelect").value;
+    const prodVal = document.getElementById("prodSelect").value;
+    const sizeVal = document.getElementById("sizeSelect").value;
+    let discountVal = parseFloat(document.getElementById("discountInput").value);
+    
+    const baseLabel = document.getElementById("basePriceLabel");
+    const finalLabel = document.getElementById("finalPriceLabel");
+    
+    if (isNaN(discountVal) || discountVal < 0) discountVal = 100;
+    if (!matVal || !prodVal || !sizeVal || typeof valveData === "undefined") {
+        baseLabel.innerText = "NT$ 0"; finalLabel.innerText = "NT$ 0";
         return;
     }
-
-    const factor = discValue !== "" ? parseFloat(discValue) : 100;
-    const computedPrice = Math.round(originalPrice * (factor / 100));
-
-    baseDisplay.textContent = "NT$ " + Number(originalPrice).toLocaleString();
-    finalDisplay.textContent = "NT$ " + computedPrice.toLocaleString();
+    
+    const matched = valveData.find(item => item.cat === currentCategory && item.mat === matVal && item.prod === prodVal);
+    if (matched && matched.sizes && matched.sizes[sizeVal] !== undefined) {
+        const priceOriginal = matched.sizes[sizeVal];
+        if (typeof priceOriginal === "string") {
+            baseLabel.innerText = priceOriginal;
+            finalLabel.innerText = priceOriginal;
+        } else {
+            const priceFinal = Math.round(priceOriginal * (discountVal / 100));
+            baseLabel.innerText = "NT$ " + priceOriginal.toLocaleString();
+            finalLabel.innerText = "NT$ " + priceFinal.toLocaleString();
+        }
+    } else {
+        baseLabel.innerText = "NT$ 0"; finalLabel.innerText = "NT$ 0";
+    }
 }
 
-function clearDisplays() {
-    baseDisplay.textContent = "NT$ 0";
-    finalDisplay.textContent = "NT$ 0";
-}
+window.onload = function() {
+    switchCategory("一般閥件");
+};
 </script>
 </body>
 </html>
