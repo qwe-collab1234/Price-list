@@ -10,21 +10,15 @@
         body { background-color: #f0f4f8; margin: 0; padding: 15px; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
         .container { background-color: #ffffff; width: 100%; max-width: 480px; border-radius: 16px; box-shadow: 0 8px 24px rgba(149, 157, 165, 0.2); padding: 20px; }
         
-        /* 四大系統分頁樣式 */
+        /* 升級版：全自動動態分頁按鈕樣式 */
         .category-tabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
-        .tab-btn { border: none; padding: 12px 8px; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .tab-btn { border: none; padding: 12px 6px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; transition: all 0.2s ease; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         
-        .tab-btn[data-cat="一般閥件"] { background-color: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb; }
-        .tab-btn[data-cat="一般閥件"].active { background-color: #1976d2; color: #ffffff; }
+        /* 動態分配風格，為不同分類準備的亮色系底色 */
+        .tab-btn.active { background-color: #1e293b !important; color: #ffffff !important; border-color: #1e293b !important; }
         
-        .tab-btn[data-cat="水錘吸收器"] { background-color: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9; }
-        .tab-btn[data-cat="水錘吸收器"].active { background-color: #388e3c; color: #ffffff; }
-        
-        .tab-btn[data-cat="污排水"] { background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
-        .tab-btn[data-cat="污排水"].active { background-color: #f57c00; color: #ffffff; }
-        
-        .tab-btn[data-cat="特殊閥件"] { background-color: #f3e5f5; color: #4a148c; border: 1px solid #e1bee7; }
-        .tab-btn[data-cat="特殊閥件"].active { background-color: #7b1fa2; color: #ffffff; }
+        /* 預設通用樣式 */
+        .tab-btn { background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
 
         .system-title { font-size: 18px; font-weight: bold; color: #333333; text-align: center; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #eaeaea; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .form-group { margin-bottom: 16px; }
@@ -48,15 +42,10 @@
 <body>
 
 <div class="container">
-    <div class="category-tabs">
-        <button class="tab-btn active" data-cat="一般閥件" onclick="switchCategory('一般閥件')">🔵 一般閥件</button>
-        <button class="tab-btn" data-cat="水錘吸收器" onclick="switchCategory('水錘吸收器')">🟢 水錘吸收器</button>
-        <button class="tab-btn" data-cat="污排水" onclick="switchCategory('污排水')">🟡 污排水</button>
-        <button class="tab-btn" data-cat="特殊閥件" onclick="switchCategory('特殊閥件')">🟣 特殊閥件</button>
-    </div>
+    <div class="category-tabs" id="dynamicTabs"></div>
 
     <div class="system-title">
-        <span id="current-title-text">一般閥件 牌價/報價查詢</span>
+        <span id="current-title-text">牌價/報價查詢</span>
     </div>
 
     <div class="form-group">
@@ -98,18 +87,52 @@
     </div>
 
     <div class="footer">
-        總毅實業有限公司 • 雲端查價系統分離版
+        總毅實業有限公司 • 雲端查價系統自動生成版
     </div>
 </div>
 
 <script>
-let currentCategory = "一般閥件";
+let currentCategory = "";
 
 const sizeWeight = {
     "1/4": 1, "3/8": 2, "1/2": 3, "3/4": 4, "1": 5, 
     "1-1/4": 6, "1-1/2": 7, "2": 8, "2-1/2": 9, "3": 10, 
     "4": 11, "5": 12, "6": 13, "8": 14, "10": 15, "12": 16
 };
+
+// 【核心優化】自動去 valveData 撈不重複的大分類，並動態做出按鈕
+function initCategoryTabs() {
+    if (typeof valveData === "undefined") return;
+    
+    // 取得所有不重複的 cat 名稱
+    const categories = [...new Set(valveData.map(item => item.cat.trim()))];
+    const tabsContainer = document.getElementById("dynamicTabs");
+    tabsContainer.innerHTML = "";
+    
+    // 定義各分類專屬顏色對照表，如果新增了沒對應到的，會自動採用灰色預設防呆
+    const colorStyleMap = {
+        "一般閥件": "background-color: #e3f2fd; color: #0d47a1; border: 1px solid #bbdefb;",
+        "水錘吸收器": "background-color: #e8f5e9; color: #1b5e20; border: 1px solid #c8e6c9;",
+        "污排水": "background-color: #fff3e0; color: #e65100; border: 1px solid #ffe0b2;",
+        "特殊閥件": "background-color: #f3e5f5; color: #4a148c; border: 1px solid #e1bee7;",
+        "消防溝槽": "background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2;"
+    };
+    
+    categories.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.className = "tab-btn";
+        btn.setAttribute("data-cat", cat);
+        btn.setAttribute("style", colorStyleMap[cat] || "background-color: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;");
+        btn.innerText = cat;
+        btn.onclick = () => switchCategory(cat);
+        tabsContainer.appendChild(btn);
+    });
+    
+    // 預設選擇第一個找到的分頁
+    if (categories.length > 0) {
+        switchCategory(categories[0]);
+    }
+}
 
 function switchCategory(catName) {
     currentCategory = catName;
@@ -125,11 +148,10 @@ function renderMatOptions() {
     const matSelect = document.getElementById("matSelect");
     matSelect.innerHTML = '<option value="">-- 請選擇材質系列 --</option>';
     
-    // 防呆：如果外部資料尚未加載完成
     if (typeof valveData === "undefined") return;
 
     const filteredMats = [...new Set(
-        valveData.filter(item => item.cat === currentCategory).map(item => item.mat)
+        valveData.filter(item => item.cat.trim() === currentCategory).map(item => item.mat)
     )];
     
     filteredMats.forEach(mat => {
@@ -151,7 +173,7 @@ function onMatChange() {
         return;
     }
     
-    const prods = valveData.filter(item => item.cat === currentCategory && item.mat === matVal);
+    const prods = valveData.filter(item => item.cat.trim() === currentCategory && item.mat === matVal);
     prods.forEach(item => {
         const opt = document.createElement("option");
         opt.value = item.prod; opt.innerText = item.prod;
@@ -172,7 +194,7 @@ function onProdChange() {
         return;
     }
     
-    const matched = valveData.find(item => item.cat === currentCategory && item.mat === matVal && item.prod === prodVal);
+    const matched = valveData.find(item => item.cat.trim() === currentCategory && item.mat === matVal && item.prod === prodVal);
     if (matched && matched.sizes) {
         const sortedSizes = Object.keys(matched.sizes).sort((a, b) => (sizeWeight[a] || 99) - (sizeWeight[b] || 99));
         sortedSizes.forEach(size => {
@@ -199,7 +221,7 @@ function calculatePrice() {
         return;
     }
     
-    const matched = valveData.find(item => item.cat === currentCategory && item.mat === matVal && item.prod === prodVal);
+    const matched = valveData.find(item => item.cat.trim() === currentCategory && item.mat === matVal && item.prod === prodVal);
     if (matched && matched.sizes && matched.sizes[sizeVal] !== undefined) {
         const priceOriginal = matched.sizes[sizeVal];
         if (typeof priceOriginal === "string") {
@@ -216,7 +238,7 @@ function calculatePrice() {
 }
 
 window.onload = function() {
-    switchCategory("一般閥件");
+    initCategoryTabs(); // 網頁開啟時，自動去撈資料庫產生按鈕
 };
 </script>
 </body>
